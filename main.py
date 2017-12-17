@@ -1,8 +1,11 @@
 from flask import Flask, request
-from caesar import superEncrypt
+from caesar import Encryption
+
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
+encrypt1 = Encryption()
+
 
 form = """
 <!DOCTYPE html>
@@ -39,7 +42,11 @@ form = """
             <form action="/" method="POST">
                 <label for="rot">Rotate by:</label>
                 <input type="text" name="rot" id="rot" value="0">
+                <label for="key">Key</label>
+                <input type="text" name="key" id="key" value="hello">
                 <textarea name="text" id="text" cols="30" rows="10" placeholder="Enter Text Here">{0}</textarea>
+                <input type="radio" name="option" value="rot">Rotate
+                <input type="radio" name="option" value="key">Key
                 <button>Submit</button>
             </form>
     </body>
@@ -54,10 +61,18 @@ def index():
 
 @app.route("/", methods=['POST'])
 def encrypt():
-    rotate_by = int(request.form["rot"])
-    text = request.form["text"]
-    encrypted_text = superEncrypt(text,rotate_by)
-    form1 = form.format(encrypted_text) 
-    return form1
+    user_choice = request.form["option"]
+    if user_choice == "rot":
+        rotate_by = int(request.form["rot"])
+        text = request.form["text"]
+        encrypted_text = encrypt1.encrypt(text,rotate_by)
+        form1 = form.format(encrypted_text) 
+        return form1
+    elif user_choice == "key":
+        key =  request.form["key"]
+        text = request.form["text"]
+        encrypted_text = encrypt1.text_encrypt(text,key)
+        form1 = form.format(encrypted_text) 
+        return form1
 
 app.run()
