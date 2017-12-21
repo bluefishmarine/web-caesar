@@ -43,10 +43,8 @@ form = """
                 <label for="rot">Rotate by:</label>
                 <input type="text" name="rot" id="rot" value="0">
                 <label for="key">Key</label>
-                <input type="text" name="key" id="key" value="hello">
+                <input type="text" name="key" id="key" value="">
                 <textarea name="text" id="text" cols="30" rows="10" placeholder="Enter Text Here">{0}</textarea>
-                <input type="radio" name="option" value="rot">Rotate
-                <input type="radio" name="option" value="key">Key
                 <button>Submit</button>
             </form>
     </body>
@@ -61,18 +59,29 @@ def index():
 
 @app.route("/", methods=['POST'])
 def encrypt():
-    user_choice = request.form["option"]
-    if user_choice == "rot":
-        rotate_by = int(request.form["rot"])
-        text = request.form["text"]
-        encrypted_text = encrypt1.encrypt(text,rotate_by)
+    rotate = request.form["rot"]
+    key = request.form["key"]
+    text = request.form["text"]
+    encryptR = ""
+    encryptK = ""
+    encryptB = ""
+    if rotate and key:
+        rotate = int(rotate)
+        encryptR = encrypt1.encrypt(text,rotate)
+        encryptK = encrypt1.text_encrypt(text,key)
+        encryptB = encrypt1.text_encrypt(encryptR,key)
+        results = encryptR + "&#8194" + encryptK + "&#8194" + encryptB  
+        form1 = form.format(results)
+        return form1
+    if rotate:
+        rotate = int(rotate)
+        encrypted_text = encrypt1.encrypt(text,rotate)
         form1 = form.format(encrypted_text) 
         return form1
-    elif user_choice == "key":
-        key =  request.form["key"]
-        text = request.form["text"]
+    elif key:
         encrypted_text = encrypt1.text_encrypt(text,key)
         form1 = form.format(encrypted_text) 
         return form1
+
 
 app.run()
